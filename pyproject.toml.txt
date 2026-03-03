@@ -1,0 +1,7 @@
+En tu test haces:
+
+from app.transformations import add_total_column
+
+Si pythonpath no está configurado, puede salir un error como:
+
+ModuleNotFoundError: No module named 'app'

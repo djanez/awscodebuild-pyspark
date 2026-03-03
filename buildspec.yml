@@ -1,0 +1,34 @@
+version: 0.2
+
+env:
+  variables:
+    PYSPARK_PYTHON: python3
+    PYSPARK_DRIVER_PYTHON: python3
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - echo "Upgrading pip..."
+      - python -m pip install --upgrade pip
+      - echo "Installing dependencies..."
+      - pip install -r requirements.txt
+
+  pre_build:
+    commands:
+      - echo "Checking Python version..."
+      - python --version
+      - echo "Checking Java..."
+      - java -version || echo "Java already available in CodeBuild image"
+
+  build:
+    commands:
+      - echo "Running unit tests..."
+      - pytest -v --disable-warnings --maxfail=1
+
+reports:
+  pytest_reports:
+    files:
+      - junit.xml
+    file-format: JUNITXML
