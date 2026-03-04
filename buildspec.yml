@@ -26,6 +26,8 @@ phases:
     commands:
       - echo "Running unit tests..."
       - pytest -v --disable-warnings --maxfail=1 --junitxml=junit.xml
+      - echo "Creating versioned copy for S3..."
+      - cp junit.xml junit-$CODEBUILD_BUILD_NUMBER.xml
 
 reports:
   pytest_reports:
@@ -35,14 +37,8 @@ reports:
 
 artifacts:
   files:
-    - junit.xml                # artifact principal para CodeBuild UI
+    - junit.xml                # archivo original para CodeBuild UI
+    - junit-*.xml              # copia versionada para S3
   discard-paths: yes
-  name: junit.xml
-  secondary-artifacts:
-    junit_versioned:
-      files:
-        - junit.xml            # artifact versionado para S3
-      name: junit-$CODEBUILD_BUILD_NUMBER.xml
-      discard-paths: yes
-      base-directory: .
-      s3-prefix: artifacts/    # carpeta en S3 donde se suben los artifacts versionados
+  base-directory: .
+  s3-prefix: artifacts/        # carpeta en S3 donde se suben los artifacts versionados
