@@ -26,6 +26,7 @@ phases:
     commands:
       - echo "Running unit tests..."
       - pytest -v --disable-warnings --maxfail=1 --junitxml=junit.xml
+      - mv junit.xml junit-$CODEBUILD_BUILD_NUMBER.xml
 
 reports:
   pytest_reports:
@@ -36,5 +37,5 @@ reports:
 artifacts:
   files:
     - junit.xml
-  name: junit-$CODEBUILD_BUILD_NUMBER.xml
+  name: junit-*.xml
   discard-paths: yes
