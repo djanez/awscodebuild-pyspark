@@ -1,42 +1,42 @@
-version: 0.2
+version: 0.2  # Versión del formato de buildspec que usa AWS CodeBuild
 
-env:
-  variables:
-    PYTHONPATH: $CODEBUILD_SRC_DIR
-    PYSPARK_PYTHON: python3
-    PYSPARK_DRIVER_PYTHON: python3
+env:  # Definición de variables de entorno disponibles durante el build
+  variables:  # Variables personalizadas
+    PYTHONPATH: $CODEBUILD_SRC_DIR  # Añade la raíz del proyecto al PYTHONPATH
+    PYSPARK_PYTHON: python3  # Indica que PySpark use python3 como intérprete
+    PYSPARK_DRIVER_PYTHON: python3  # Fuerza al driver de Spark a usar python3
 
-phases:
-  install:
-    runtime-versions:
-      python: 3.11
+phases:  # Fases del ciclo de vida del build
+  install:  # Fase donde se instalan dependencias
+    runtime-versions:  # Versiones de runtime gestionadas por CodeBuild
+      python: 3.11  # Usa Python 3.11 en el entorno del contenedor
+    commands:  # Comandos que se ejecutan en esta fase
+      - echo "Upgrading pip..."  # Mensaje informativo en logs
+      - python -m pip install --upgrade pip  # Actualiza pip a la última versión
+      - echo "Installing dependencies..."  # Mensaje informativo en logs
+      - pip install -r requirements.txt  # Instala dependencias del proyecto
+
+  pre_build:  # Fase previa a la compilación/test
     commands:
-      - echo "Upgrading pip..."
-      - python -m pip install --upgrade pip
-      - echo "Installing dependencies..."
-      - pip install -r requirements.txt
+      - echo "Checking versions..."  # Mensaje informativo
+      - python --version  # Muestra versión de Python en logs
+      - java -version  # Muestra versión de Java (necesario para Spark)
 
-  pre_build:
+  build:  # Fase principal del proceso
     commands:
-      - echo "Checking versions..."
-      - python --version
-      - java -version
+      - echo "Running unit tests..."  # Mensaje informativo
+      - pytest -v --disable-warnings --maxfail=1 --junitxml=junit.xml  # Ejecuta tests y genera reporte JUnit XML
+      - echo "Creating versioned copy for S3..."  # Mensaje informativo
+      - cp junit.xml junit-$CODEBUILD_BUILD_NUMBER.xml  # Crea copia con número de build para evitar sobreescritura en S3
 
-  build:
-    commands:
-      - echo "Running unit tests..."
-      - pytest -v --disable-warnings --maxfail=1 --junitxml=junit.xml
-      - echo "Creating versioned copy for S3..."
-      - cp junit.xml junit-$CODEBUILD_BUILD_NUMBER.xml
-
-reports:
-  pytest_reports:
+reports:  # Configuración de reports internos de CodeBuild
+  pytest_reports:  # Nombre lógico del grupo de reportes
     files:
-      - junit.xml
-    file-format: JUNITXML
+      - junit.xml  # Archivo que CodeBuild usará para mostrar resultados en la consola
+    file-format: JUNITXML  # Formato del reporte compatible con pytest
 
-artifacts:
+artifacts:  # Configuración de artifacts que se subirán a S3
   files:
-    - junit-*.xml              # copia versionada para S3
-  discard-paths: yes
-  base-directory: .
+    - junit-*.xml  # Sube solo los XML versionados (evita subir el original)
+  discard-paths: yes  # No mantiene estructura de carpetas al subir a S3
+  base-directory: .  # Busca los archivos desde la raíz del proyecto
