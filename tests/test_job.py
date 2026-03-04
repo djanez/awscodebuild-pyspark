@@ -10,5 +10,5 @@ def test_job_logic_filters_negatives(spark):
 
     rows = result.collect()
 
-    assert df.where(col("total") < 0).count() == 0
+    assert result.where(col("total") < 0).count() == 0
     assert rows[0]["total"] == 3
