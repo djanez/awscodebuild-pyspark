@@ -36,5 +36,5 @@ reports:
 artifacts:
   files:
     - junit.xml
-  name: junit-$(date +%Y%m%d-%H%M%S).xml
+  name: junit-$CODEBUILD_BUILD_NUMBER.xml
   discard-paths: yes
