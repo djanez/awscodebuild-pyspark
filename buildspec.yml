@@ -36,3 +36,4 @@ reports:
 artifacts:
   files:
     - junit.xml
+  name: junit-$(date +%Y%m%d-%H%M%S).xml
