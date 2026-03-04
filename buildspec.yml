@@ -37,8 +37,6 @@ reports:
 
 artifacts:
   files:
-    - junit.xml                # archivo original para CodeBuild UI
     - junit-*.xml              # copia versionada para S3
   discard-paths: yes
   base-directory: .
-  s3-prefix: artifacts/        # carpeta en S3 donde se suben los artifacts versionados
