@@ -32,3 +32,7 @@ reports:
     files:
       - junit.xml
     file-format: JUNITXML
+
+artifacts:
+  files:
+    - junit.xml
