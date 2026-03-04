@@ -2,6 +2,7 @@ version: 0.2
 
 env:
   variables:
+    PYTHONPATH: $CODEBUILD_SRC_DIR
     PYSPARK_PYTHON: python3
     PYSPARK_DRIVER_PYTHON: python3
 
@@ -17,15 +18,14 @@ phases:
 
   pre_build:
     commands:
-      - echo "Checking Python version..."
+      - echo "Checking versions..."
       - python --version
-      - echo "Checking Java..."
-      - java -version || echo "Java already available in CodeBuild image"
+      - java -version
 
   build:
     commands:
       - echo "Running unit tests..."
-      - pytest -v --disable-warnings --maxfail=1
+      - pytest -v --disable-warnings --maxfail=1 --junitxml=junit.xml
 
 reports:
   pytest_reports:

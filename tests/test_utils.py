@@ -1,4 +1,4 @@
-from app.transformations import add_total_column, filter_positive_totals
+from app.utils import add_total_column, filter_positive_totals
 
 def test_add_total_column(spark):
     data = [(1, 2), (3, 4)]
@@ -19,4 +19,4 @@ def test_filter_positive_totals(spark):
     expected_data = [(1, 2, 3)]
     expected_df = spark.createDataFrame(expected_data, ["a", "b", "total"])
 
-    assert result.collect() == expected_df.collect()
+    assert sorted(result.collect()) == sorted(expected_df.collect())

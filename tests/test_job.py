@@ -1,4 +1,5 @@
-from app.transformations import add_total_column, filter_positive_totals
+from app.utils import add_total_column, filter_positive_totals
+from pyspark.sql.functions import col
 
 def test_job_logic_filters_negatives(spark):
     data = [(1, 2), (-5, 1)]
